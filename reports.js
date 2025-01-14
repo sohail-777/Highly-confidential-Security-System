@@ -1,28 +1,46 @@
-// Get all reports from localStorage
-let reports = JSON.parse(localStorage.getItem('reports')) || [];
+// Function to decrypt the data
+function decryptData(encryptedData, key) {
+    try {
+        let decrypted = atob(encryptedData); // Base64 decoding
+        let original = decrypted.split('').map((char, i) => 
+            String.fromCharCode(char.charCodeAt(0) - key.length)
+        ).join('');
+        return original;
+    } catch (error) {
+        alert("Invalid decryption key!");
+        return null;
+    }
+}
 
-// Get the reports container element
-const reportsContainer = document.getElementById('reportsContainer');
+// Get stored encrypted reports from localStorage
+let encryptedReports = localStorage.getItem('reports');
 
-// If there are no reports, show a message
-if (reports.length === 0) {
-    reportsContainer.innerHTML = '<p>No reports available. Please generate a report first.</p>';
+if (!encryptedReports || encryptedReports === "[]") {
+    document.getElementById('reportsContainer').innerHTML = "<p>No reports available.</p>";
 } else {
-    // Loop through each report and display it
-    reports.forEach(report => {
-        const reportElement = document.createElement('div');
-        reportElement.classList.add('report');
+    // Ask for the decryption key
+    let decryptionKey = prompt("Enter your decryption key to view reports:");
 
-        reportElement.innerHTML = `
-            <h3>Report Generated on: ${report.date}</h3>
-            <p><strong>Bank Name:</strong> ${report.bankName}</p>
-            <p><strong>Account Number:</strong> ${report.accountNumber}</p>
-            <p><strong>IFSC Code:</strong> ${report.ifscCode}</p>
-            <p><strong>State:</strong> ${report.state}</p>
-            <p><strong>District:</strong> ${report.district}</p>
-        `;
+    if (decryptionKey) {
+        let decryptedReports = JSON.parse(decryptData(encryptedReports, decryptionKey));
 
-        // Append the report to the container
-        reportsContainer.appendChild(reportElement);
-    });
+        if (decryptedReports) {
+            const reportsContainer = document.getElementById('reportsContainer');
+            reportsContainer.innerHTML = ""; // Clear default message
+
+            decryptedReports.forEach(report => {
+                const reportElement = document.createElement('div');
+                reportElement.classList.add('report');
+                reportElement.innerHTML = `
+                    <h3>Report Generated on: ${report.date}</h3>
+                    <p><strong>Bank Name:</strong> ${report.bankName}</p>
+                    <p><strong>Account Number:</strong> ${report.accountNumber}</p>
+                    <p><strong>IFSC Code:</strong> ${report.ifscCode}</p>
+                    <p><strong>State:</strong> ${report.state}</p>
+                    <p><strong>District:</strong> ${report.district}</p>
+                `;
+                reportsContainer.appendChild(reportElement);
+            });
+        }
+    }
 }

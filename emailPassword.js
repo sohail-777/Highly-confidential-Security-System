@@ -1,7 +1,6 @@
 document.querySelector('form').addEventListener('submit', function (event) {
     event.preventDefault();
 
-    // Get email and password values
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value.trim();
 
@@ -10,24 +9,25 @@ document.querySelector('form').addEventListener('submit', function (event) {
         return;
     }
 
-    // Create a data object
-    const data = { email, password, timestamp: new Date().toLocaleString() };
+    // Ask user for encryption key
+    const encryptionKey = prompt("Enter an encryption key (remember this to decrypt your data):");
 
-    // Retrieve existing data from localStorage
+    if (!encryptionKey) {
+        alert("Encryption key is required!");
+        return;
+    }
+
+    // Encrypt data using AES
+    const encryptedEmail = CryptoJS.AES.encrypt(email, encryptionKey).toString();
+    const encryptedPassword = CryptoJS.AES.encrypt(password, encryptionKey).toString();
+
+    const data = { email: encryptedEmail, password: encryptedPassword, timestamp: new Date().toLocaleString() };
+
     let storedData = JSON.parse(localStorage.getItem('emailPasswordData')) || [];
-
-    // Add the new entry to the stored data
     storedData.push(data);
-
-    // Save the updated data back to localStorage
     localStorage.setItem('emailPasswordData', JSON.stringify(storedData));
 
-    // Clear the form
     document.querySelector('form').reset();
-
-    alert('Data saved successfully!');
-
-    // Redirect to the report page
-    window.location.href = 'emailPasswordReport.html';
+    alert('Data saved successfully (encrypted)!');
 });
 
