@@ -1,4 +1,4 @@
-document.getElementById('imageForm').addEventListener('submit', function(event) {
+document.getElementById('imageForm').addEventListener('submit', function (event) {
     event.preventDefault();
 
     const imageFiles = document.getElementById('imageFiles').files;
@@ -8,21 +8,22 @@ document.getElementById('imageForm').addEventListener('submit', function(event) 
         const image = imageFiles[i];
         const reader = new FileReader();
 
-        reader.onload = function(e) {
-            images.push({
+        reader.onload = function (e) {
+            const imageData = {
                 name: image.name,
                 type: image.type,
                 size: (image.size / (1024 * 1024)).toFixed(2) + ' MB', // Size in MB
-                dataURL: e.target.result, // Base64 image data
-            });
+                dataURL: e.target.result // Base64 image data
+            };
 
-            // Store images after reading them
+            images.push(imageData);
+
             if (images.length === imageFiles.length) {
                 let storedImages = JSON.parse(localStorage.getItem('images')) || [];
                 storedImages = storedImages.concat(images);
                 localStorage.setItem('images', JSON.stringify(storedImages));
 
-                // Redirect to the report page
+                alert("Images uploaded successfully!");
                 window.location.href = 'imagesReport.html';
             }
         };

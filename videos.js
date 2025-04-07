@@ -1,4 +1,4 @@
-document.getElementById('videoForm').addEventListener('submit', function(event) {
+document.getElementById('videoForm').addEventListener('submit', function (event) {
     event.preventDefault();
 
     const videoFiles = document.getElementById('videoFiles').files;
@@ -13,11 +13,11 @@ document.getElementById('videoForm').addEventListener('submit', function(event) 
         });
     }
 
-    // Store video details in localStorage
     let storedVideos = JSON.parse(localStorage.getItem('videos')) || [];
     storedVideos = storedVideos.concat(videos);
     localStorage.setItem('videos', JSON.stringify(storedVideos));
 
-    // Redirect to report page
+    alert("Videos uploaded successfully!");
     window.location.href = 'videosReport.html';
 });
+

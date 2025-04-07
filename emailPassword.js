@@ -1,33 +1,35 @@
-document.querySelector('form').addEventListener('submit', function (event) {
+// Handle form submission
+document.getElementById('emailPasswordForm').addEventListener('submit', function (event) {
     event.preventDefault();
 
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value.trim();
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
 
     if (!email || !password) {
-        alert('Please fill in both email and password.');
+        alert("Please fill in both fields!");
         return;
     }
 
-    // Ask user for encryption key
-    const encryptionKey = prompt("Enter an encryption key (remember this to decrypt your data):");
+    // Create a report object
+    const report = {
+        email,
+        password,
+        date: new Date().toLocaleString(),
+    };
 
-    if (!encryptionKey) {
-        alert("Encryption key is required!");
-        return;
-    }
+    // Retrieve existing reports from localStorage or create an empty array
+    let emailReports = JSON.parse(localStorage.getItem('emailReports')) || [];
+    emailReports.push(report);
 
-    // Encrypt data using AES
-    const encryptedEmail = CryptoJS.AES.encrypt(email, encryptionKey).toString();
-    const encryptedPassword = CryptoJS.AES.encrypt(password, encryptionKey).toString();
+    // Save updated reports back to localStorage
+    localStorage.setItem('emailReports', JSON.stringify(emailReports));
 
-    const data = { email: encryptedEmail, password: encryptedPassword, timestamp: new Date().toLocaleString() };
+    alert("Email & Password data saved successfully!");
+    document.getElementById('emailPasswordForm').reset(); // Reset the form
+});
 
-    let storedData = JSON.parse(localStorage.getItem('emailPasswordData')) || [];
-    storedData.push(data);
-    localStorage.setItem('emailPasswordData', JSON.stringify(storedData));
-
-    document.querySelector('form').reset();
-    alert('Data saved successfully (encrypted)!');
+// Handle "View Reports" button click
+document.getElementById('viewReportButton').addEventListener('click', function () {
+    window.location.href = 'emailPasswordReport.html';
 });
 
